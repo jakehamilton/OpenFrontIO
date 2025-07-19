@@ -38,6 +38,7 @@ export class PortExecution implements Execution {
       }
       this.port = this.player.buildUnit(UnitType.Port, spawn, {});
       this.createStation();
+      this.port.setLastTradeShipSpawn(this.mg.ticks());
     }
 
     if (!this.port.isActive()) {
@@ -77,13 +78,16 @@ export class PortExecution implements Execution {
   }
 
   shouldSpawnTradeShip(): boolean {
-    const numTradeShips = this.mg.unitCount(UnitType.TradeShip);
-    const spawnRate = this.mg.config().tradeShipSpawnRate(numTradeShips);
-    for (let i = 0; i < this.port!.level(); i++) {
-      if (this.random.chance(spawnRate)) {
-        return true;
-      }
+    const ships = this.mg.unitCount(UnitType.TradeShip);
+    if (ships >= this.mg.config().tradeShipMaxNumber()) {
+      return false;
     }
+
+    if (this.port?.shouldSpawnTradeShip()) {
+      this.port.setLastTradeShipSpawn(this.mg.ticks());
+      return true;
+    }
+
     return false;
   }
 

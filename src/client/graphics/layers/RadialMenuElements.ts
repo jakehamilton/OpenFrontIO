@@ -23,9 +23,12 @@ import chatIcon from "../../../../resources/images/ChatIconWhite.svg";
 import donateGoldIcon from "../../../../resources/images/DonateGoldIconWhite.svg";
 import donateTroopIcon from "../../../../resources/images/DonateTroopIconWhite.svg";
 import emojiIcon from "../../../../resources/images/EmojiIconWhite.svg";
+import goldCoinIconWhite from "../../../../resources/images/GoldCoinIconWhite.svg";
 import infoIcon from "../../../../resources/images/InfoIcon.svg";
+import playerIcon from "../../../../resources/images/PlayerIconWhite.svg";
 import targetIcon from "../../../../resources/images/TargetIconWhite.svg";
 import traitorIcon from "../../../../resources/images/TraitorIconWhite.svg";
+
 import { EventBus } from "../../../core/EventBus";
 
 export interface MenuElementParams {
@@ -70,11 +73,12 @@ export const COLORS = {
   ally: "#53ac75",
   breakAlly: "#c74848",
   info: "#64748B",
+  player: "#c35de8",
   target: "#ff0000",
   infoDetails: "#7f8c8d",
   infoEmoji: "#f1c40f",
-  trade: "#008080",
-  embargo: "#6600cc",
+  trade: "#e0dd18",
+  embargo: "#db8803",
   tooltip: {
     cost: "#ffd700",
     count: "#aaa",
@@ -96,6 +100,7 @@ export enum Slot {
   Build = "build",
   Ally = "ally",
   Back = "back",
+  Player = "player",
 }
 
 const infoChatElement: MenuElement = {
@@ -133,12 +138,13 @@ const allyTargetElement: MenuElement = {
 const allyTradeElement: MenuElement = {
   id: "ally_trade",
   name: "trade",
+  icon: goldCoinIconWhite,
   disabled: (params: MenuElementParams) =>
+    params.myPlayer.id() === params.selected?.id() ||
     !!params.playerActions?.interaction?.canEmbargo,
   displayed: (params: MenuElementParams) =>
     !params.playerActions?.interaction?.canEmbargo,
   color: COLORS.trade,
-  text: translateText("player_panel.start_trade"),
   action: (params: MenuElementParams) => {
     params.playerActionHandler.handleEmbargo(params.selected!, "stop");
     params.closeMenu();
@@ -148,12 +154,12 @@ const allyTradeElement: MenuElement = {
 const allyEmbargoElement: MenuElement = {
   id: "ally_embargo",
   name: "embargo",
+  icon: goldCoinIconWhite,
   disabled: (params: MenuElementParams) =>
     !params.playerActions?.interaction?.canEmbargo,
   displayed: (params: MenuElementParams) =>
     !!params.playerActions?.interaction?.canEmbargo,
   color: COLORS.embargo,
-  text: translateText("player_panel.stop_trade"),
   action: (params: MenuElementParams) => {
     params.playerActionHandler.handleEmbargo(params.selected!, "start");
     params.closeMenu();
@@ -295,6 +301,54 @@ export const infoMenuElement: MenuElement = {
   color: COLORS.info,
   action: (params: MenuElementParams) => {
     params.playerPanel.show(params.playerActions, params.tile);
+  },
+};
+
+export const playerMenuElement: MenuElement = {
+  id: Slot.Player,
+  name: "player",
+  disabled: (params: MenuElementParams) =>
+    !params.selected || params.game.inSpawnPhase(),
+  icon: playerIcon,
+  color: COLORS.player,
+  subMenu: (params: MenuElementParams) => {
+    allyTradeElement.tooltipItems = [
+      {
+        text: translateText("player_panel.start_trade"),
+        className: "title",
+      },
+    ];
+
+    allyEmbargoElement.tooltipItems = [
+      {
+        text: translateText("player_panel.stop_trade"),
+        className: "title",
+      },
+    ];
+
+    if (!params.myPlayer.isAlive()) {
+      return [];
+    }
+
+    const requestOrBreakElement = params.playerActions.interaction
+      ?.canBreakAlliance
+      ? allyBreakElement
+      : allyRequestElement;
+
+    const tradeOrEmbargoElement = params.playerActions.interaction?.canEmbargo
+      ? allyEmbargoElement
+      : allyTradeElement;
+
+    return [
+      infoMenuElement,
+      params.myPlayer.isAlive() ? requestOrBreakElement : null,
+      params.myPlayer.isAlive() ? tradeOrEmbargoElement : null,
+    ].filter((item): item is MenuElement => item !== null);
+  },
+  action: (params: MenuElementParams) => {
+    if (!params.myPlayer.isAlive()) {
+      infoMenuElement.action!(params);
+    }
   },
 };
 
@@ -443,7 +497,7 @@ export const centerButtonElement: CenterButtonElement = {
 };
 
 export const rootMenuItems: MenuElement[] = [
-  infoMenuElement,
+  playerMenuElement,
   boatMenuElement,
   buildMenuElement,
 ];

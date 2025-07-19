@@ -96,10 +96,7 @@ export class FxLayer implements Layer {
     switch (unit.type()) {
       case UnitType.AtomBomb:
       case UnitType.MIRVWarhead:
-        this.onNukeEvent(unit, 70);
-        break;
-      case UnitType.HydrogenBomb:
-        this.onNukeEvent(unit, 160);
+        this.onNukeEvent(unit, this.game.config().nukeRange(unit.type()));
         break;
       case UnitType.Warship:
         this.onWarshipEvent(unit);

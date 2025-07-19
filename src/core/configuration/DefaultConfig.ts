@@ -354,16 +354,20 @@ export class DefaultConfig implements Config {
     return BigInt(Math.floor(baseGold * totalMultiplier));
   }
 
-  // Chance to spawn a trade ship in one second,
-  tradeShipSpawnRate(numTradeShips: number): number {
-    if (numTradeShips < 20) {
-      return 5;
-    }
-    if (numTradeShips <= 150) {
-      const additional = numTradeShips - 20;
-      return Math.floor(Math.pow(additional, 0.85) + 5);
-    }
-    return 1_000_000;
+  tradeShipSpawnCooldown() {
+    return 15 * 10;
+  }
+
+  tradeShipSpawnCooldownReductionMax() {
+    return 13 * 10;
+  }
+
+  tradeShipSpawnRate() {
+    return 3;
+  }
+
+  tradeShipMaxNumber() {
+    return 128;
   }
 
   unitInfo(type: UnitType): UnitInfo {
@@ -406,7 +410,7 @@ export class DefaultConfig implements Config {
               : BigInt(
                   Math.min(
                     1_000_000,
-                    Math.pow(2, p.unitsConstructed(UnitType.Port)) * 125_000,
+                    Math.pow(2, p.unitsOwned(UnitType.Port)) * 125_000,
                   ),
                 ),
           territoryBound: true,
@@ -466,7 +470,7 @@ export class DefaultConfig implements Config {
               : BigInt(
                   Math.min(
                     250_000,
-                    (p.unitsConstructed(UnitType.DefensePost) + 1) * 50_000,
+                    (p.unitsOwned(UnitType.DefensePost) + 1) * 50_000,
                   ),
                 ),
           territoryBound: true,
@@ -480,7 +484,7 @@ export class DefaultConfig implements Config {
               : BigInt(
                   Math.min(
                     3_000_000,
-                    (p.unitsConstructed(UnitType.SAMLauncher) + 1) * 1_500_000,
+                    (p.unitsOwned(UnitType.SAMLauncher) + 1) * 1_500_000,
                   ),
                 ),
           territoryBound: true,
@@ -495,7 +499,7 @@ export class DefaultConfig implements Config {
               : BigInt(
                   Math.min(
                     1_000_000,
-                    Math.pow(2, p.unitsConstructed(UnitType.City)) * 125_000,
+                    Math.pow(2, p.unitsOwned(UnitType.City)) * 125_000,
                   ),
                 ),
           territoryBound: true,
@@ -511,7 +515,7 @@ export class DefaultConfig implements Config {
               : BigInt(
                   Math.min(
                     1_000_000,
-                    Math.pow(2, p.unitsConstructed(UnitType.Factory)) * 125_000,
+                    Math.pow(2, p.unitsOwned(UnitType.Factory)) * 125_000,
                   ),
                 ),
           territoryBound: true,
@@ -570,7 +574,7 @@ export class DefaultConfig implements Config {
     return 80;
   }
   boatMaxNumber(): number {
-    return 3;
+    return 4;
   }
   numSpawnPhaseTurns(): number {
     return this._gameConfig.gameType === GameType.Singleplayer ? 100 : 300;
@@ -745,7 +749,7 @@ export class DefaultConfig implements Config {
           return 50_000 * (playerInfo?.nation?.strength ?? 1);
       }
     }
-    return this.infiniteTroops() ? 1_000_000 : 25_000;
+    return this.infiniteTroops() ? 100_000_000 : 25_000;
   }
 
   maxPopulation(player: Player | PlayerView): number {
@@ -833,11 +837,23 @@ export class DefaultConfig implements Config {
   nukeMagnitudes(unitType: UnitType): NukeMagnitude {
     switch (unitType) {
       case UnitType.MIRVWarhead:
-        return { inner: 12, outer: 18 };
+        return { inner: 24, outer: 42 };
       case UnitType.AtomBomb:
         return { inner: 12, outer: 30 };
       case UnitType.HydrogenBomb:
         return { inner: 80, outer: 100 };
+    }
+    throw new Error(`Unknown nuke type: ${unitType}`);
+  }
+
+  nukeRange(unitType: UnitType): number {
+    switch (unitType) {
+      case UnitType.MIRVWarhead:
+        return 80;
+      case UnitType.AtomBomb:
+        return 60;
+      case UnitType.HydrogenBomb:
+        return 100;
     }
     throw new Error(`Unknown nuke type: ${unitType}`);
   }
@@ -847,11 +863,11 @@ export class DefaultConfig implements Config {
   }
 
   defaultNukeTargetableRange(): number {
-    return 120;
+    return 175;
   }
 
   defaultSamRange(): number {
-    return 80;
+    return 150;
   }
 
   // Humans can be population, soldiers attacking, soldiers in boat etc.
