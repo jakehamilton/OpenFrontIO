@@ -2,7 +2,7 @@
   config.packages.openfront = {
     systems = [ "x86_64-linux" ];
 
-    package = { lib, buildNpmPackage, importNpmLock, nodejs, pkg-config, pixman, cairo, pango, cloudflared, makeWrapper, ... }:
+    package = { lib, buildNpmPackage, importNpmLock, nodejs, pkg-config, pixman, cairo, pango, cloudflared, bash, makeWrapper, ... }:
       let
         src = ../..;
       in
@@ -45,7 +45,7 @@
 
           makeWrapper ${nodejs}/bin/npm $out/bin/openfront \
             --chdir "$out/libexec/openfront" \
-            --prefix PATH : ${lib.makeBinPath [ cloudflared ]} \
+            --prefix PATH : ${lib.makeBinPath [ cloudflared bash nodejs ]} \
             --prefix NODE_PATH : "$out/libexec/openfront/node_modules" \
             --add-flags "run start:server" \
         '';
