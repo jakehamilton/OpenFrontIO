@@ -130,6 +130,7 @@ export default async (env, argv) => {
           process.env.STRIPE_PUBLISHABLE_KEY,
         ),
         "process.env.NODE_PORT": JSON.stringify(3000),
+        "process.env.R2_ENDPOINT": JSON.stringify(null),
       }),
       new CopyPlugin({
         patterns: [
