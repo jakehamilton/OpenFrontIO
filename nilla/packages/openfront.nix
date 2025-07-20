@@ -2,7 +2,7 @@
   config.packages.openfront = {
     systems = [ "x86_64-linux" ];
 
-    package = { lib, buildNpmPackage, importNpmLock, nodejs, pkg-config, pixman, cairo, pango, makeWrapper, ... }:
+    package = { lib, buildNpmPackage, importNpmLock, nodejs, pkg-config, pixman, cairo, pango, cloudflared, makeWrapper, ... }:
       let
         src = ../..;
       in
@@ -30,6 +30,7 @@
           pixman
           cairo
           pango
+          cloudflared
         ];
 
         installPhase = ''
