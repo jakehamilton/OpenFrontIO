@@ -13,6 +13,10 @@
         inherit src;
         inherit nodejs;
 
+        meta = {
+          mainProgram = "openfront";
+        };
+
         GIT_COMMIT = "unstable";
 
         npmDeps = importNpmLock {
@@ -39,12 +43,11 @@
 
           cp -r . $out/libexec/openfront
 
-          makeWrapper ${lib.getExe nodejs} $out/bin/openfront \
+          makeWrapper ${nodejs}/bin/npm $out/bin/openfront \
+            --chdir "$out/libexec/openfront" \
             --prefix PATH : ${lib.makeBinPath [ cloudflared ]} \
             --prefix NODE_PATH : "$out/libexec/openfront/node_modules" \
-            --add-flags "--loader ts-node/esm" \
-            --add-flags "--experimental-specifier-resolution=node" \
-            --add-flags "$out/libexec/openfront/src/server/Server.ts"
+            --add-flags "run start:server" \
         '';
       };
   };
