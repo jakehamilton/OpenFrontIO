@@ -40,6 +40,8 @@
           cp -r . $out/libexec/openfront
 
           makeWrapper ${lib.getExe nodejs} $out/bin/openfront \
+            --prefix PATH : ${lib.makeBinPath [ cloudflared ]} \
+            --prefix NODE_PATH : "$out/libexec/openfront/node_modules" \
             --add-flags "--loader ts-node/esm" \
             --add-flags "--experimental-specifier-resolution=node" \
             --add-flags "$out/libexec/openfront/src/server/Server.ts"
