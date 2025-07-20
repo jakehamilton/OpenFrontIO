@@ -8,6 +8,8 @@ import { startWorker } from "./Worker";
 
 const config = getServerConfigFromServer();
 
+const NODE_PORT = process.env.NODE_PORT ? Number(process.env.NODE_PORT) : 3000;
+
 dotenv.config();
 
 // Main entry point of the application
@@ -49,7 +51,7 @@ async function setupTunnels() {
   for (let i = 0; i < config.numWorkers(); i++) {
     domainToService.set(
       `w${i}-${config.subdomain()}`,
-      `http://localhost:${3000 + i + 1}`,
+      `http://localhost:${NODE_PORT + i + 1}`,
     );
   }
 

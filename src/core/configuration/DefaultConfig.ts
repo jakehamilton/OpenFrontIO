@@ -202,7 +202,9 @@ export abstract class DefaultServerConfig implements ServerConfig {
     return this.workerPortByIndex(this.workerIndex(gameID));
   }
   workerPortByIndex(index: number): number {
-    return 3001 + index;
+    return (
+      (process.env.NODE_PORT ? Number(process.env.NODE_PORT) : 3000) + 1 + index
+    );
   }
 }
 
