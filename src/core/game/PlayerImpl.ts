@@ -859,6 +859,7 @@ export class PlayerImpl implements Player {
           canUpgrade = existingUnit.id();
         }
       }
+
       return {
         type: u,
         canBuild: this.mg.inSpawnPhase()

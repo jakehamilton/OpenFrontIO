@@ -16,11 +16,11 @@ declare global {
 @customElement("google-ad")
 export class GoogleAdElement extends LitElement {
   // Configurable properties
-  @property({ type: String }) adClient = "ca-pub-7035513310742290";
-  @property({ type: String }) adSlot = "5220834834";
+  @property({ type: String }) adClient = "";
+  @property({ type: String }) adSlot = "";
   @property({ type: String }) adFormat = "auto";
   @property({ type: Boolean }) fullWidthResponsive = true;
-  @property({ type: String }) adTest = "off"; // "on" for testing, remove or set to "off" for production
+  @property({ type: String }) adTest = "on"; // "on" for testing, remove or set to "off" for production
   @property({ type: String }) darkBackgroundColor = "rgba(0, 0, 0, 0.2)";
 
   // Disable shadow DOM so AdSense can access the elements

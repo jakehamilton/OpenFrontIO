@@ -35,6 +35,7 @@ export class UnitImpl implements Unit {
   private _targetable: boolean = true;
   private _loaded: boolean | undefined;
   private _trainType: TrainType | undefined;
+  private _lastTradeShipSpawn: Tick = 0;
 
   constructor(
     private _type: UnitType,
@@ -346,6 +347,22 @@ export class UnitImpl implements Unit {
 
   reachedTarget(): boolean {
     return this._reachedTarget;
+  }
+
+  setLastTradeShipSpawn(tick: Tick) {
+    this._lastTradeShipSpawn = tick;
+  }
+
+  shouldSpawnTradeShip() {
+    const ticksSinceLastSpawn = this.mg.ticks() - this._lastTradeShipSpawn;
+    const ticksReductionFromLevel = Math.min(
+      (this._level - 1) * this.mg.config().tradeShipSpawnRate(),
+      this.mg.config().tradeShipSpawnCooldownReductionMax(),
+    );
+
+    const ticks = ticksSinceLastSpawn + ticksReductionFromLevel;
+
+    return ticks >= this.mg.config().tradeShipSpawnCooldown();
   }
 
   setSafeFromPirates(): void {

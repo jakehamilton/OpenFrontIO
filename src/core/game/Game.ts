@@ -443,6 +443,10 @@ export interface Unit {
   isInCooldown(): boolean;
   missileTimerQueue(): number[];
 
+  // Ports
+  setLastTradeShipSpawn(tick: Tick): void;
+  shouldSpawnTradeShip(): boolean;
+
   // Trade Ships
   setSafeFromPirates(): void; // Only for trade ships
   isSafeFromPirates(): boolean; // Only for trade ships

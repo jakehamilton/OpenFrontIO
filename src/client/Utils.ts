@@ -91,6 +91,7 @@ export const translateText = (
     !langSelector.translations ||
     Object.keys(langSelector.translations).length === 0
   ) {
+    console.error("Translations not loaded yet");
     return key;
   }
 

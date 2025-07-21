@@ -130,7 +130,10 @@ export interface Config {
   defaultDonationAmount(sender: Player): number;
   unitInfo(type: UnitType): UnitInfo;
   tradeShipGold(dist: number, numPorts: number): Gold;
-  tradeShipSpawnRate(numberOfPorts: number): number;
+  tradeShipSpawnRate(): number;
+  tradeShipSpawnCooldown(): number;
+  tradeShipSpawnCooldownReductionMax(): number;
+  tradeShipMaxNumber(): number;
   trainGold(): Gold;
   trainSpawnRate(numberOfStations: number): number;
   trainStationMinRange(): number;
@@ -153,6 +156,7 @@ export interface Config {
   traitorDefenseDebuff(): number;
   traitorDuration(): number;
   nukeMagnitudes(unitType: UnitType): NukeMagnitude;
+  nukeRange(unitType: UnitType): number;
   defaultNukeSpeed(): number;
   defaultNukeTargetableRange(): number;
   defaultSamRange(): number;

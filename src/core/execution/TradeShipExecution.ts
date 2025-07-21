@@ -19,6 +19,7 @@ export class TradeShipExecution implements Execution {
   private wasCaptured = false;
   private pathFinder: PathFinder;
   private tilesTraveled = 0;
+  private checkOffset = 0;
 
   constructor(
     private origOwner: Player,
@@ -29,6 +30,7 @@ export class TradeShipExecution implements Execution {
   init(mg: Game, ticks: number): void {
     this.mg = mg;
     this.pathFinder = PathFinder.Mini(mg, 2500);
+    this.checkOffset = mg.ticks() % 2;
   }
 
   tick(ticks: number): void {
@@ -53,6 +55,10 @@ export class TradeShipExecution implements Execution {
       this.active = false;
       return;
     }
+
+    // if ((this.mg.ticks() + this.checkOffset) % 2 !== 0) {
+    //   return;
+    // }
 
     const tradeShipOwner = this.tradeShip.owner();
     const dstPortOwner = this._dstPort.owner();
